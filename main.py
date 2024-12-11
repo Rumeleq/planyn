@@ -149,15 +149,39 @@ async def get_timetable(session: ClientSession, i: int):
                         insert_data_to_grades(*w, num_col, num_row, grade)
 
 
+async def find_grades_number():
+    """Find the total number of pages in the book"""
+    low, high = 0, 50
+
+    while low < high:
+        mid = (low + high) // 2
+        test_url = f'{URL}o{mid}.html'
+        try:
+            async with ClientSession() as session:
+                async with session.get(test_url, allow_redirects=False) as page_response:
+                    if page_response.status == 200:
+                        low = mid + 1
+                    else:
+                        high = mid
+        except Exception as e:
+            print(f"Unexpected error for {test_url}: {type(e).__name__} - {e}")
+            break
+
+    return low - 1
+
+
 async def main():
     # getting timetables
     tasks: list[asyncio.Task] = list()
     async with ClientSession() as session:
-        for i in range(1, 32):
+        grades_number: int = await find_grades_number()
+        print(grades_number)
+        for i in range(1, grades_number + 1):
             tasks.append(asyncio.create_task(get_timetable(session, i)))  # create tasks for each timetable
         await asyncio.gather(*tasks)
 
-    tasks: list[asyncio.Task] = list()  # list to store tasks
+    tasks.clear()
+
     # saving teachers' timetables
     path = f'{JSON_PATH}timetables/teachers/'
     await save_timetables(TEACHERS_TIMETABLES, path, tasks)

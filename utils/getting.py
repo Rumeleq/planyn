@@ -1,5 +1,5 @@
 from bs4 import ResultSet, Tag
-from constants import TEACHERS, LESSONS
+from utils.constants import TEACHERS, LESSONS
 
 
 def get_lesson_details(span: ResultSet[Tag]):
