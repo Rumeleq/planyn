@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-
 import aiofiles
 
 
@@ -11,6 +10,7 @@ async def save_timetables(timetables: dict[str, dict[str, list[tuple[str, str, s
     Args:
         timetables (dict[str, dict[str, list[tuple[str, str, str]]]): timetables to save
         directory (str): directory to save the timetables
+        tasks (list[asyncio.Task]): list of tasks
     """
     if not os.path.exists(directory):  # if the folder doesn't exist, create it
         os.makedirs(directory)
@@ -28,5 +28,3 @@ async def save_timetable(timetable_name: str, timetable, directory: str) -> None
     """
     async with aiofiles.open(f'{directory}{timetable_name}.json', 'w', encoding='utf-8') as f:
         await f.write(json.dumps(timetable, ensure_ascii=False, indent=4))   # save the timetable to the file
- 
-
